@@ -1,0 +1,2 @@
+camera, width: 2.0, height: 2.0
+plane, normal: [0, 0, 1], diffuse_color: [0, 1, 0], position: [0, 0, -5]
