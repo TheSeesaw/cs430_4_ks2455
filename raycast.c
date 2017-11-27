@@ -168,6 +168,8 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
   Vector3d *new_normal_ray = malloc(sizeof(Vector3d));
   // scooch intersection point to avoid clipping errors
   scooch(intersect_ray, new_origin);
+  // create a normalized ray between the intersection point and light
+
   // loop through all lights
   for (; light_index < light_list_length; light_index += 1)
   {
@@ -177,7 +179,6 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
     r_light, g_light, b_light = 0;
     for (; shape_index < shapes_list_length; shape_index += 1)
     {
-      // create a normalized ray between the intersection point and light
       // check for intersections with each shape
       // if intersect, contribute to 0 to final shade
       // break from loop as soon as intersection is found
