@@ -55,41 +55,47 @@ int main(int argc, char *argv[]) {
 	origin->z = 0;
 	double ray_length;
 	double intersection_test_result;
-	double closest_intersection;
+	double closest_intersection_dist;
+	Vector3d *closest_intersection_ray = malloc(sizeof(Vector3d));
+	Vector3d *intersection_ray = malloc(sizeof(Vector3d));
 	Vector3d *normalized_ray = malloc(sizeof(Vector3d));
+	Pixel *final_color = malloc(sizeof(Pixel));
 	// Loop through all the points in the view plane
 	for (int view_plane_index = 0; view_plane_index < view_plane1d_length; view_plane_index++)
 	{
 		intersection_test_result = INFINITY; // re-initialize intersection_test_result
-		closest_intersection = INFINITY;
+		closest_intersection_dist = INFINITY;
 		closest_intersection_index = 0; // re-initialize the closest shape to the first one
 		// normalize the current Pij
 		ray_length = distance_between_points(origin, &view_plane[view_plane_index]);
 		normalized_ray->x = view_plane[view_plane_index].x / ray_length;
 		normalized_ray->y = view_plane[view_plane_index].y / ray_length;
 		normalized_ray->z = view_plane[view_plane_index].z / ray_length;
-		// raytrace for target point in view plane for all shapes
+		// raycast for target point in view plane for all shapes
 		for (int s_index = 0; s_index < total_objects[0]; s_index += 1)
 		{
-			intersection_test_result = intersection_test_director(&shapes_list[s_index], normalized_ray);
-			if (intersection_test_result < closest_intersection)
+			intersection_test_result = intersection_test_director(&shapes_list[s_index], normalized_ray, intersection_ray);
+			if (intersection_test_result < closest_intersection_dist)
 			{
 				// update the closest intersection for this pixel
-				closest_intersection = intersection_test_result;
+				closest_intersection_dist = intersection_test_result;
 				closest_intersection_index = s_index;
+				closest_intersection_ray = intersection_ray;
 			}
 		}
 		// After testing intersection for all shapes, check result,
 		// and save color result in the pixel_plane
-		if (closest_intersection == INFINITY) // no intersections
+		if (closest_intersection_dist == INFINITY) // no intersections
 		{ // set pixel color to black
 			pixel_plane[view_plane_index].r = 0;
 			pixel_plane[view_plane_index].g = 0;
 			pixel_plane[view_plane_index].b = 0;
 		}
 		else // set the pixel's color to the color of the closest shape
-		{ // convert color from decimal scale to 24 bit rgb
-			// TODO: apply specular light
+		{
+			// perform illumination calculations TODO: finish params for following function
+			//int light_intersect_result = light_intersect_director(shape_list[closest_intersection_index], shapes_list, lights_list, final_color);
+			// convert color from decimal scale to 24 bit rgb
 			pixel_plane[view_plane_index].r = (int)(shapes_list[closest_intersection_index].d_col_r * 255);
 			pixel_plane[view_plane_index].g = (int)(shapes_list[closest_intersection_index].d_col_g * 255);
 			pixel_plane[view_plane_index].b = (int)(shapes_list[closest_intersection_index].d_col_b * 255);

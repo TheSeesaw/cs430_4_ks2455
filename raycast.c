@@ -42,7 +42,7 @@ void construct_view_plane(Point *view_plane1d, double res_width, double res_heig
 
 // raytraces through a single point on the view plane to check intersection
 // returns the distance to closest intersection
-double sphere_intersection(Shape *sphere, Vector3d *normal_ray)
+double sphere_intersection(Shape *sphere, Vector3d *normal_ray, Vector3d *intersect_strg)
 {
   Vector3d *sphere_pos = malloc(sizeof(Vector3d)); // initialize a vector for sphere position
   sphere_pos->x = sphere->pos_x; // save sphere position data in vector
@@ -68,6 +68,10 @@ double sphere_intersection(Shape *sphere, Vector3d *normal_ray)
   closest_intersection->z = (normal_ray->z * dot_product);
   // calculate the distance between the sphere center and the closest intersection
   double distance_from_intersection_to_center = distance_between_points(sphere_center, closest_intersection);
+  // update intersect_strg with point of closest intersection
+  intersect_strg->x = closest_intersection->x;
+  intersect_strg->y = closest_intersection->y;
+  intersect_strg->z = closest_intersection->z;
   free(sphere_center); // done with intermediate structs
   free(closest_intersection);
   // if distance is less than sphere radius, it's a hit
@@ -83,7 +87,7 @@ double sphere_intersection(Shape *sphere, Vector3d *normal_ray)
   }
 }
 
-double plane_intersection(Shape *plane, Vector3d *normal_ray)
+double plane_intersection(Shape *plane, Vector3d *normal_ray, Vector3d *intersect_strg)
 {
   Vector3d *plane_norm = malloc(sizeof(Vector3d)); // initialize a vector for plane normal
   plane_norm->x = plane->norm_x;
@@ -123,16 +127,16 @@ double plane_intersection(Shape *plane, Vector3d *normal_ray)
 // and passes them to the appropriate intersection test function
 // returns distance to closest intersection if there was a hit,
 // or -INFINITY if it was a miss
-double intersection_test_director(Shape *current_shape, Vector3d *normal_ray)
+double intersection_test_director(Shape *current_shape, Vector3d *normal_ray, Vector3d *intersect_strg)
 {
   double intersection_test_result = INFINITY;
   if (current_shape->type == Sphere) // sphere intersection test
   {
-    intersection_test_result = sphere_intersection(current_shape, normal_ray);
+    intersection_test_result = sphere_intersection(current_shape, normal_ray, intersect_strg);
   }
   else if (current_shape->type == Plane) // plane intersection test
   {
-    intersection_test_result = plane_intersection(current_shape, normal_ray);
+    intersection_test_result = plane_intersection(current_shape, normal_ray, intersect_strg);
   }
   else
   {
@@ -140,4 +144,12 @@ double intersection_test_director(Shape *current_shape, Vector3d *normal_ray)
     return INFINITY;
   }
   return intersection_test_result;
+}
+
+int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray)
+{
+  // loop through all lights
+  //
+
+  return 1;
 }
