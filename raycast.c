@@ -42,7 +42,7 @@ void construct_view_plane(Point *view_plane1d, double res_width, double res_heig
 
 // raytraces through a single point on the view plane to check intersection
 // returns the distance to closest intersection
-double sphere_intersection(Shape *sphere, Vector3d *normal_ray, Vector3d *intersect_strg)
+double sphere_intersection(Shape *sphere, /*Point *origin,*/ Vector3d *normal_ray, Vector3d *intersect_strg)
 {
   Vector3d *sphere_pos = malloc(sizeof(Vector3d)); // initialize a vector for sphere position
   sphere_pos->x = sphere->pos_x; // save sphere position data in vector
@@ -87,7 +87,7 @@ double sphere_intersection(Shape *sphere, Vector3d *normal_ray, Vector3d *inters
   }
 }
 
-double plane_intersection(Shape *plane, Vector3d *normal_ray, Vector3d *intersect_strg)
+double plane_intersection(Shape *plane, /*Point *origin,*/ Vector3d *normal_ray, Vector3d *intersect_strg)
 {
   Vector3d *plane_norm = malloc(sizeof(Vector3d)); // initialize a vector for plane normal
   plane_norm->x = plane->norm_x;
@@ -127,16 +127,16 @@ double plane_intersection(Shape *plane, Vector3d *normal_ray, Vector3d *intersec
 // and passes them to the appropriate intersection test function
 // returns distance to closest intersection if there was a hit,
 // or -INFINITY if it was a miss
-double intersection_test_director(Shape *current_shape, Vector3d *normal_ray, Vector3d *intersect_strg)
+double intersection_test_director(Shape *current_shape, /*Point *origin,*/ Vector3d *normal_ray, Vector3d *intersect_strg)
 {
   double intersection_test_result = INFINITY;
   if (current_shape->type == Sphere) // sphere intersection test
   {
-    intersection_test_result = sphere_intersection(current_shape, normal_ray, intersect_strg);
+    intersection_test_result = sphere_intersection(current_shape, /*origin,*/ normal_ray, intersect_strg);
   }
   else if (current_shape->type == Plane) // plane intersection test
   {
-    intersection_test_result = plane_intersection(current_shape, normal_ray, intersect_strg);
+    intersection_test_result = plane_intersection(current_shape, /*origin,*/ normal_ray, intersect_strg);
   }
   else
   {
@@ -146,19 +146,53 @@ double intersection_test_director(Shape *current_shape, Vector3d *normal_ray, Ve
   return intersection_test_result;
 }
 
+void scooch(Vector3d *current_ray, Vector3d *result_strg)
+{
+  double scooch_val = 0.00001;
+  // apply schooch value to current_ray
+  result_strg->x = current_ray->x - scooch_val;
+  result_strg->y = current_ray->y - scooch_val;
+  result_strg->z = current_ray->z + scooch_val;
+}
+
 int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray, Vector3d *shade_strg)
 {
-  // loop through all lights
+  // declare working variables
+  int shape_index;
+  int intersect_switch;
   int light_index = 0;
   int light_list_length = sizeof(lights) / sizeof(lights[0]);
   int shapes_list_length = sizeof(shapes) / sizeof(shapes[0]);
-  for (; light_index < light_list_length; i += 1)
+  double r_light, g_light, b_light;
+  Vector3d *new_origin = malloc(sizeof(Vector3d));
+  Vector3d *new_normal_ray = malloc(sizeof(Vector3d));
+  // scooch intersection point to avoid clipping errors
+  scooch(intersect_ray, new_origin);
+  // loop through all lights
+  for (; light_index < light_list_length; light_index += 1)
   {
     // for each light, loop through all shapes
-    // check for intersections with each shape
-    // if intersect, contribute to 0 to final shade
-    // else, call shade that calculates the various light values
+    shape_index = 0;
+    intersect_switch = 0; // 0 for false intersection
+    r_light, g_light, b_light = 0;
+    for (; shape_index < shapes_list_length; shape_index += 1)
+    {
+      // create a normalized ray between the intersection point and light
+      // check for intersections with each shape
+      // if intersect, contribute to 0 to final shade
+      // break from loop as soon as intersection is found
+      // else, continue
+    }
+    if (intersect_switch == 0) // no intersections, light contributes
+    {
+      // call shade function for this light
+      // TODO: shade(r_light, g_light, b_light);
+    }
+    // else, intersections, no light contribution
+    // add light contribution to final color for pixel
     // store final color in shade_strg when all light contribution has been calculated
   }
+  free(new_origin);
+  free(new_normal_ray);
   return 0;
 }

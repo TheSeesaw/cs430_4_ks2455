@@ -222,6 +222,11 @@ int read_object_file_director(char *in_file_name, Shape *camera, Shape *output_l
   return 0;
 }
 
+void shade(double *r_strg, double *g_strg, double *b_strg)
+{
+	return;
+}
+
 // writes pixel data to a P6 .ppm file in binary
 int write_pixels_to_p6(Pixel *buffer, char *out_file_name, int res_width, int res_height)
 {

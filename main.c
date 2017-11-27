@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 		// raycast for target point in view plane for all shapes
 		for (int s_index = 0; s_index < total_objects[0]; s_index += 1)
 		{
-			intersection_test_result = intersection_test_director(&shapes_list[s_index], normalized_ray, intersection_ray);
+			intersection_test_result = intersection_test_director(&shapes_list[s_index], /*origin,*/ normalized_ray, intersection_ray);
 			if (intersection_test_result < closest_intersection_dist)
 			{
 				// update the closest intersection for this pixel

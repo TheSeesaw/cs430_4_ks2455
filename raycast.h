@@ -15,7 +15,11 @@ double plane_intersection(Shape *plane, Vector3d *normal_ray, Vector3d *intersec
 
 //double raycast_primitive(Vector3d *normal_ray, )
 
-double intersection_test_director(Shape *current_shape, Vector3d *normal_ray, Vector3d *intersect_strg);
+double intersection_test_director(Shape *current_shape, /*Point *origin,*/ Vector3d *normal_ray, Vector3d *intersect_strg);
+
+// shifts intersection point toward origin slightly (0.00001 units), result saved
+// in result_strg
+void scooch(Vector3d *current_ray, Vector3d *result_strg);
 
 // Takes in the current shape, shapes, lights, the intersection point with current shape,
 // and a variable to store the final shade
