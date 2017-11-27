@@ -146,10 +146,19 @@ double intersection_test_director(Shape *current_shape, Vector3d *normal_ray, Ve
   return intersection_test_result;
 }
 
-int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray)
+int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray, Vector3d *shade_strg)
 {
   // loop through all lights
-  //
-
-  return 1;
+  int light_index = 0;
+  int light_list_length = sizeof(lights) / sizeof(lights[0]);
+  int shapes_list_length = sizeof(shapes) / sizeof(shapes[0]);
+  for (; light_index < light_list_length; i += 1)
+  {
+    // for each light, loop through all shapes
+    // check for intersections with each shape
+    // if intersect, contribute to 0 to final shade
+    // else, call shade that calculates the various light values
+    // store final color in shade_strg when all light contribution has been calculated
+  }
+  return 0;
 }

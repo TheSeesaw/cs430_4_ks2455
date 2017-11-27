@@ -17,4 +17,7 @@ double plane_intersection(Shape *plane, Vector3d *normal_ray, Vector3d *intersec
 
 double intersection_test_director(Shape *current_shape, Vector3d *normal_ray, Vector3d *intersect_strg);
 
-int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray);
+// Takes in the current shape, shapes, lights, the intersection point with current shape,
+// and a variable to store the final shade
+// returns an int code for error checking
+int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray, Vector3d *shade_strg);
