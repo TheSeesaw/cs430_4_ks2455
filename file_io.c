@@ -91,6 +91,7 @@ void read_sphere_data(FILE* file_to_read, Shape* output_list, int obj_index) {
 	fgetc(file_to_read); // skip over comma
 	fscanf(file_to_read, "%lf", &output_list[obj_index].pos_z); // read in z position
 	fgetc(file_to_read); // skip over right bracket
+	printf("sphere\n");
 	free(wastebasket); // free the junk data pointer
 }
 
@@ -129,7 +130,8 @@ void read_plane_data(FILE* file_to_read, Shape* output_list, int obj_index)
 	fgetc(file_to_read); // skip over comma
 	fscanf(file_to_read, "%lf", &output_list[obj_index].pos_z); // read in z position
 	fgetc(file_to_read); // skip over right bracket
-	printf("red color: %lf, green color: %lf, blue color: %lf\n", output_list[obj_index].d_col_r, output_list[obj_index].d_col_g, output_list[obj_index].d_col_b);
+	printf("plane\n");
+	//printf("red color: %lf, green color: %lf, blue color: %lf\n", output_list[obj_index].d_col_r, output_list[obj_index].d_col_g, output_list[obj_index].d_col_b);
 	free(wastebasket); // free the junk data pointer
 }
 
@@ -169,10 +171,11 @@ void read_light_data(FILE* file_to_read, Light* light_list, int light_index)
 	fgetc(file_to_read); // skip over comma
 	fscanf(file_to_read, "%lf", &light_list[light_index].pos_z); // read in z position
 	fgetc(file_to_read); // skip over right bracket
-	printf("r color: %lf, g color: %lf, b color %lf\n", light_list[light_index].col_r, light_list[light_index].col_g, light_list[light_index].col_b);
-	printf("theta: %lf\n", light_list[light_index].theta);
-	printf("radial-a2: %lf, radial-a1: %lf, radial-a0: %lf\n", light_list[light_index].radial_a2, light_list[light_index].radial_a1, light_list[light_index].radial_a0);
-	printf("x pos %lf, y pos %lf, z pos %lf\n", light_list[light_index].pos_x, light_list[light_index].pos_y, light_list[light_index].pos_z);
+	printf("light\n");
+	//printf("r color: %lf, g color: %lf, b color %lf\n", light_list[light_index].col_r, light_list[light_index].col_g, light_list[light_index].col_b);
+	//printf("theta: %lf\n", light_list[light_index].theta);
+	//printf("radial-a2: %lf, radial-a1: %lf, radial-a0: %lf\n", light_list[light_index].radial_a2, light_list[light_index].radial_a1, light_list[light_index].radial_a0);
+	//printf("x pos %lf, y pos %lf, z pos %lf\n", light_list[light_index].pos_x, light_list[light_index].pos_y, light_list[light_index].pos_z);
 	free(wastebasket);
 }
 

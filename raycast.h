@@ -21,7 +21,11 @@ double intersection_test_director(Shape *current_shape, /*Point *origin,*/ Vecto
 // in result_strg
 void scooch(Vector3d *current_ray, Vector3d *result_strg);
 
+void normalize_ray(Vector3d *origin, Vector3d *target, Vector3d *result);
+
+void construct_rd(Vector3d *origin, double trg_x, double trg_y, double trg_z, Vector3d *rd_strg);
+
 // Takes in the current shape, shapes, lights, the intersection point with current shape,
 // and a variable to store the final shade
 // returns an int code for error checking
-int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray, Vector3d *shade_strg);
+int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray, Pixel *shade_strg);

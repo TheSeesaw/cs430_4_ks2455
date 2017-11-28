@@ -66,6 +66,10 @@ double sphere_intersection(Shape *sphere, /*Point *origin,*/ Vector3d *normal_ra
   closest_intersection->x = (normal_ray->x * dot_product);
   closest_intersection->y = (normal_ray->y * dot_product);
   closest_intersection->z = (normal_ray->z * dot_product);
+  // store the closest intersection in intersect_strg
+  intersect_strg->x = closest_intersection->x;
+  intersect_strg->y = closest_intersection->y;
+  intersect_strg->z = closest_intersection->z;
   // calculate the distance between the sphere center and the closest intersection
   double distance_from_intersection_to_center = distance_between_points(sphere_center, closest_intersection);
   // update intersect_strg with point of closest intersection
@@ -118,6 +122,10 @@ double plane_intersection(Shape *plane, /*Point *origin,*/ Vector3d *normal_ray,
   }
   else // else, a hit
   {
+    // scale normal ray by t to get point of closest intersection, store for later use
+    intersect_strg->x = intersection_test * normal_ray->x;
+    intersect_strg->y = intersection_test * normal_ray->y;
+    intersect_strg->z = intersection_test * normal_ray->z;
     //printf("HIT: %lf\n", intersection_test);
     return intersection_test;
   }
@@ -155,7 +163,50 @@ void scooch(Vector3d *current_ray, Vector3d *result_strg)
   result_strg->z = current_ray->z + scooch_val;
 }
 
-int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray, Vector3d *shade_strg)
+void normalize_ray(Vector3d *origin, Vector3d *rd, Vector3d *result)
+{
+  Point *origin_pt = malloc(sizeof(Point));
+  Point *trg_pt = malloc(sizeof(Point));
+  double ray_length = 0.0;
+  double w_x = rd->x;
+  double w_y = rd->y;
+  double w_z = rd->z;
+  // first, cast vectors to points for distance formula
+  origin_pt->x = origin->x;
+  origin_pt->y = origin->y;
+  origin_pt->z = origin->z;
+  trg_pt->x = rd->x;
+  trg_pt->y = rd->y;
+  trg_pt->z = rd->z;
+  // get the distance between origin and target (ray length)
+  ray_length = distance_between_points(origin_pt, trg_pt);
+  // scale the target vector
+  w_x /= ray_length; // workaround for strange behavior when assigning floating
+  w_y /= ray_length; // point division to struct fields
+  w_z /= ray_length;
+  result->x = w_x;
+  result->y = w_y;
+  result->z = w_z;
+  // normalized ray is now stored in result
+  free(origin_pt);
+  free(trg_pt);
+}
+
+void construct_rd(Vector3d *origin, double trg_x, double trg_y, double trg_z, Vector3d *rd_strg)
+{
+  double o_x, o_y, o_z, rd_x, rd_y, rd_z;
+  o_x = origin->x; // store vector values in doubles to avoid strange struct
+  o_y = origin->y; // field math
+  o_z = origin->z;
+  rd_x = trg_x - o_x;
+  rd_y = trg_y - o_y;
+  rd_z = trg_z - o_z;
+  rd_strg->x = rd_x;
+  rd_strg->y = rd_y;
+  rd_strg->z = rd_z;
+}
+
+int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray, Pixel *shade_strg)
 {
   // declare working variables
   int shape_index;
@@ -163,27 +214,38 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
   int light_index = 0;
   int light_list_length = sizeof(lights) / sizeof(lights[0]);
   int shapes_list_length = sizeof(shapes) / sizeof(shapes[0]);
-  double r_light, g_light, b_light;
+  double l_x, l_y, l_z, r_light, g_light, b_light;
   Vector3d *new_origin = malloc(sizeof(Vector3d));
+  Vector3d *new_rd = malloc(sizeof(Vector3d));
   Vector3d *new_normal_ray = malloc(sizeof(Vector3d));
   // scooch intersection point to avoid clipping errors
   scooch(intersect_ray, new_origin);
-  // create a normalized ray between the intersection point and light
-
   // loop through all lights
   for (; light_index < light_list_length; light_index += 1)
   {
+    // calculate new Rd
+    l_x = lights[light_index].pos_x; // pull values out of the struct
+    l_y = lights[light_index].pos_y;
+    l_z = lights[light_index].pos_z;
+    construct_rd(new_origin, l_x, l_y, l_z, new_rd);
+    // create a normalized ray between the intersection point and light
+    normalize_ray(new_origin, new_rd, new_normal_ray);
+    printf("light %d : ", light_index);
     // for each light, loop through all shapes
     shape_index = 0;
     intersect_switch = 0; // 0 for false intersection
-    r_light, g_light, b_light = 0;
+    r_light = 0;
+    g_light = 0;
+    b_light = 0;
     for (; shape_index < shapes_list_length; shape_index += 1)
     {
+      printf("shape %d ", shape_index);
       // check for intersections with each shape
       // if intersect, contribute to 0 to final shade
       // break from loop as soon as intersection is found
       // else, continue
     }
+    printf("\n");
     if (intersect_switch == 0) // no intersections, light contributes
     {
       // call shade function for this light

@@ -49,16 +49,16 @@ int main(int argc, char *argv[]) {
 	// Perform raycasting
 	int view_plane1d_length = res_width * res_height;
 	int closest_intersection_index;
-	Point *origin = malloc(sizeof(Point));
-	origin->x = 0;
-	origin->y = 0;
-	origin->z = 0;
-	double ray_length;
 	double intersection_test_result;
 	double closest_intersection_dist;
 	Vector3d *closest_intersection_ray = malloc(sizeof(Vector3d));
 	Vector3d *intersection_ray = malloc(sizeof(Vector3d));
 	Vector3d *normalized_ray = malloc(sizeof(Vector3d));
+	Vector3d *the_origin = malloc(sizeof(Vector3d));
+	Vector3d *rd = malloc(sizeof(Vector3d));
+	the_origin->x = 0;
+	the_origin->y = 0;
+	the_origin->z = 0;
 	Pixel *final_color = malloc(sizeof(Pixel));
 	// Loop through all the points in the view plane
 	for (int view_plane_index = 0; view_plane_index < view_plane1d_length; view_plane_index++)
@@ -66,21 +66,27 @@ int main(int argc, char *argv[]) {
 		intersection_test_result = INFINITY; // re-initialize intersection_test_result
 		closest_intersection_dist = INFINITY;
 		closest_intersection_index = 0; // re-initialize the closest shape to the first one
+		// convert view plane point to a vector
+		rd->x = view_plane[view_plane_index].x;
+		rd->y = view_plane[view_plane_index].y;
+		rd->z = view_plane[view_plane_index].z;
 		// normalize the current Pij
-		ray_length = distance_between_points(origin, &view_plane[view_plane_index]);
-		normalized_ray->x = view_plane[view_plane_index].x / ray_length;
-		normalized_ray->y = view_plane[view_plane_index].y / ray_length;
-		normalized_ray->z = view_plane[view_plane_index].z / ray_length;
+		normalize_ray(the_origin, rd, normalized_ray);
 		// raycast for target point in view plane for all shapes
 		for (int s_index = 0; s_index < total_objects[0]; s_index += 1)
 		{
-			intersection_test_result = intersection_test_director(&shapes_list[s_index], /*origin,*/ normalized_ray, intersection_ray);
+			intersection_test_result = intersection_test_director(&shapes_list[s_index],
+																														/*origin,*/
+																														normalized_ray,
+																														intersection_ray);
 			if (intersection_test_result < closest_intersection_dist)
 			{
 				// update the closest intersection for this pixel
 				closest_intersection_dist = intersection_test_result;
 				closest_intersection_index = s_index;
-				closest_intersection_ray = intersection_ray;
+				closest_intersection_ray->x = intersection_ray->x;
+				closest_intersection_ray->y = intersection_ray->y;
+				closest_intersection_ray->z = intersection_ray->z;
 			}
 		}
 		// After testing intersection for all shapes, check result,
@@ -94,8 +100,13 @@ int main(int argc, char *argv[]) {
 		else // set the pixel's color to the color of the closest shape
 		{
 			// perform illumination calculations TODO: finish params for following function
-			//int light_intersect_result = light_intersect_director(shape_list[closest_intersection_index], shapes_list, lights_list, final_color);
+			int light_intersect_result = light_intersect_director(&shapes_list[closest_intersection_index],
+				 																										shapes_list,
+																														lights_list,
+																														normalized_ray,
+																														final_color);
 			// convert color from decimal scale to 24 bit rgb
+			// TODO: assign final color to pixel
 			pixel_plane[view_plane_index].r = (int)(shapes_list[closest_intersection_index].d_col_r * 255);
 			pixel_plane[view_plane_index].g = (int)(shapes_list[closest_intersection_index].d_col_g * 255);
 			pixel_plane[view_plane_index].b = (int)(shapes_list[closest_intersection_index].d_col_b * 255);
@@ -104,8 +115,10 @@ int main(int argc, char *argv[]) {
   // Write results
 	write_pixels_to_p6(pixel_plane, argv[4], res_width, res_height);
 	// Free memory
+	free(rd);
+	free(the_origin);
 	free(normalized_ray);
-	free(origin);
+	free(closest_intersection_ray);
 	free(pixel_plane);
 	free(view_plane);
 	free(camera);
