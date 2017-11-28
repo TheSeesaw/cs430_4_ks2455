@@ -28,4 +28,4 @@ void construct_rd(Vector3d *origin, double trg_x, double trg_y, double trg_z, Ve
 // Takes in the current shape, shapes, lights, the intersection point with current shape,
 // and a variable to store the final shade
 // returns an int code for error checking
-int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray, Pixel *shade_strg);
+int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, int *obj_count_array, Vector3d *intersect_ray, Pixel *shade_strg);

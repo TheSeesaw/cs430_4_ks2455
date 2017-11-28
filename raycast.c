@@ -206,9 +206,11 @@ void construct_rd(Vector3d *origin, double trg_x, double trg_y, double trg_z, Ve
   rd_strg->z = rd_z;
 }
 
-int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, Vector3d *intersect_ray, Pixel *shade_strg)
+int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, int *obj_count_array, Vector3d *intersect_ray, Pixel *shade_strg)
 {
   // declare working variables
+  printf("objects: %d\n", obj_count_array[0]);
+  printf("lights: %d\n", obj_count_array[1]);
   int shape_index;
   int intersect_switch;
   int light_index = 0;
@@ -248,6 +250,7 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
     printf("\n");
     if (intersect_switch == 0) // no intersections, light contributes
     {
+      printf("no instersections, light contributes\n");
       // call shade function for this light
       // TODO: shade(r_light, g_light, b_light);
     }
@@ -256,6 +259,7 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
     // store final color in shade_strg when all light contribution has been calculated
   }
   free(new_origin);
+  free(new_rd);
   free(new_normal_ray);
   return 0;
 }
