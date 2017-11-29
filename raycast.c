@@ -102,38 +102,35 @@ double plane_intersection(Shape *plane, Vector3d *ro, Vector3d *normal_ray, Vect
   plane_norm->x = plane->norm_x;
   plane_norm->y = plane->norm_y;
   plane_norm->z = plane->norm_z;
-  // get the dot product of the normal ray and the plane's normal
+  // get the dot product of the normal ray and the plane's normal (denominator)
   double norm_ray_dot_product = Vector3d_dot_prod(plane_norm, normal_ray);
-  //printf("Plane normal and Normal Ray dot product result: %lf\n", norm_ray_dot_product);
-  if (norm_ray_dot_product == 0) { // if that dot product results in a 0, return a miss
-    //printf("MISS!\n");
-    return INFINITY;
-  }
   Vector3d *plane_pos = malloc(sizeof(Vector3d)); // initialize a vector for plane position
   plane_pos->x = plane->pos_x;
   plane_pos->y = plane->pos_y;
   plane_pos->z = plane->pos_z;
-  // get the dot product of the plane's position and normal
+  // get the dot product of the plane's position and normal (d value)
   double pos_norm_dot_product = Vector3d_dot_prod(plane_norm, plane_pos);
-  //printf("Plane normal and Plane Pos dot product result: %lf\n", pos_norm_dot_product);
-  double intersection_test = -1 * (pos_norm_dot_product / norm_ray_dot_product);
-  //printf("Intersection test result: %lf\n", intersection_test);
-  free(plane_pos); // done with intermediate structs
-  free(plane_norm);
-  if (intersection_test < 0) // miss
-  {
-    //printf("MISS!\n");
-    return INFINITY;
+  Vector3d *ro_plus_d = malloc(sizeof(Vector3d)); // initialize vector for Ro + D
+  ro_plus_d->x = ro->x + pos_norm_dot_product;
+  ro_plus_d->y = ro->y + pos_norm_dot_product;
+  ro_plus_d->z = ro->z + pos_norm_dot_product;
+  // get the dot product of ro_plus_d and the plane's normal (numerator)
+  double norm_ro_d_dot_product = Vector3d_dot_prod(plane_norm, ro_plus_d);
+  // test for intersection
+  double tf = (-1 * norm_ro_d_dot_product) / norm_ray_dot_product;
+  if (tf < 0) {
+    return INFINITY; // miss
   }
-  else // else, a hit
-  {
-    // scale normal ray by t to get point of closest intersection, store for later use
-    intersect_strg->x = intersection_test * normal_ray->x;
-    intersect_strg->y = intersection_test * normal_ray->y;
-    intersect_strg->z = intersection_test * normal_ray->z;
-    //printf("HIT: %lf\n", intersection_test);
-    return intersection_test;
-  }
+  // calculate intersection point
+  double r_x, r_y, r_z;
+  r_x = ro_x + (normal_ray->x * tf);
+  r_y = ro_y + (normal_ray->y * tf);
+  r_z = ro_z + (normal_ray->z * tf);
+  intersect_strg->x = r_x;
+  intersect_strg->y = r_y;
+  intersect_strg->z = r_z;
+  printf("HIT!: %lf\n",tf);
+  return tf;
 }
 
 // takes in a shape and the view plane array,
