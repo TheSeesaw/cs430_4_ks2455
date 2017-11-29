@@ -216,10 +216,11 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
   int light_index = 0;
   int light_list_length = sizeof(lights) / sizeof(lights[0]);
   int shapes_list_length = sizeof(shapes) / sizeof(shapes[0]);
-  double l_x, l_y, l_z, r_light, g_light, b_light;
+  double l_x, l_y, l_z, r_light, g_light, b_light, intersect_result;
   Vector3d *new_origin = malloc(sizeof(Vector3d));
   Vector3d *new_rd = malloc(sizeof(Vector3d));
   Vector3d *new_normal_ray = malloc(sizeof(Vector3d));
+  Vector3d *intersect_point = malloc(sizeof(Vector3d));
   // scooch intersection point to avoid clipping errors
   scooch(intersect_ray, new_origin);
   // loop through all lights
@@ -236,6 +237,7 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
     // for each light, loop through all shapes
     shape_index = 0;
     intersect_switch = 0; // 0 for false intersection
+    intersect_result = INFINITY; // reset intersection result
     r_light = 0;
     g_light = 0;
     b_light = 0;
@@ -243,9 +245,12 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
     {
       printf("shape %d ", shape_index);
       // check for intersections with each shape
-      // if intersect, contribute to 0 to final shade
-      // break from loop as soon as intersection is found
-      // else, continue
+      intersect_result = intersection_test_director(&shapes[shape_index], new_normal_ray, intersect_point);
+      if (intersect_result < INFINITY)// if intersect, contribute to 0 to final shade
+      {
+        intersect_switch = 1; // set intersection switch for shading
+        break; // break from loop as soon as intersection is found
+      } // else, continue
     }
     printf("\n");
     if (intersect_switch == 0) // no intersections, light contributes
@@ -258,6 +263,7 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
     // add light contribution to final color for pixel
     // store final color in shade_strg when all light contribution has been calculated
   }
+  free(intersect_point);
   free(new_origin);
   free(new_rd);
   free(new_normal_ray);
