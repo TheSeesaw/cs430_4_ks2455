@@ -100,12 +100,13 @@ int main(int argc, char *argv[]) {
 		else // set the pixel's color to the color of the closest shape
 		{
 			// perform illumination calculations TODO: finish params for following function
-			int light_intersect_result = light_intersect_director(&shapes_list[closest_intersection_index],
+			/*int light_intersect_result = light_intersect_director(&shapes_list[closest_intersection_index],
 				 																										shapes_list,
 																														lights_list,
 																														total_objects,
 																														normalized_ray,
 																														final_color);
+																														*/
 			// convert color from decimal scale to 24 bit rgb
 			// TODO: assign final color to pixel
 			pixel_plane[view_plane_index].r = (int)(shapes_list[closest_intersection_index].d_col_r * 255);

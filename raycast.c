@@ -92,6 +92,7 @@ double sphere_intersection(Shape *sphere, Vector3d *ro, Vector3d *normal_ray, Ve
   intersect_strg->x = r_x;
   intersect_strg->y = r_y;
   intersect_strg->z = r_z;
+  printf("HIT!: %lf\n",tf);
   return tf;
 }
 
