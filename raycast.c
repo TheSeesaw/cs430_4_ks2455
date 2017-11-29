@@ -111,7 +111,7 @@ double plane_intersection(Shape *plane, /*Point *origin,*/ Vector3d *normal_ray,
   // get the dot product of the plane's position and normal
   double pos_norm_dot_product = Vector3d_dot_prod(plane_norm, plane_pos);
   //printf("Plane normal and Plane Pos dot product result: %lf\n", pos_norm_dot_product);
-  double intersection_test = pos_norm_dot_product / norm_ray_dot_product;
+  double intersection_test = -1 * (pos_norm_dot_product / norm_ray_dot_product);
   //printf("Intersection test result: %lf\n", intersection_test);
   free(plane_pos); // done with intermediate structs
   free(plane_norm);
