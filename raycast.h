@@ -9,13 +9,13 @@ double distance_between_points(Point *point_a, Point *point_b);
 
 void construct_view_plane(Point *view_plane1d, double res_width, double res_height, double cam_width, double cam_height);
 
-double sphere_intersection(Shape *sphere, Vector3d *normal_ray, Vector3d *intersect_strg);
+double sphere_intersection(Shape *sphere, Vector3d *ro, Vector3d *normal_ray, Vector3d *intersect_strg);
 
-double plane_intersection(Shape *plane, Vector3d *normal_ray, Vector3d *intersect_strg);
+double plane_intersection(Shape *plane, Vector3d *ro, Vector3d *normal_ray, Vector3d *intersect_strg);
 
 //double raycast_primitive(Vector3d *normal_ray, )
 
-double intersection_test_director(Shape *current_shape, /*Point *origin,*/ Vector3d *normal_ray, Vector3d *intersect_strg);
+double intersection_test_director(Shape *current_shape, Vector3d *ro, Vector3d *normal_ray, Vector3d *intersect_strg);
 
 // shifts intersection point toward origin slightly (0.00001 units), result saved
 // in result_strg

@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 		for (int s_index = 0; s_index < total_objects[0]; s_index += 1)
 		{
 			intersection_test_result = intersection_test_director(&shapes_list[s_index],
-																														/*origin,*/
+																														the_origin,
 																														normalized_ray,
 																														intersection_ray);
 			if (intersection_test_result < closest_intersection_dist)

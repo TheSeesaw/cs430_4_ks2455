@@ -42,56 +42,60 @@ void construct_view_plane(Point *view_plane1d, double res_width, double res_heig
 
 // raytraces through a single point on the view plane to check intersection
 // returns the distance to closest intersection
-double sphere_intersection(Shape *sphere, /*Point *origin,*/ Vector3d *normal_ray, Vector3d *intersect_strg)
+double sphere_intersection(Shape *sphere, Vector3d *ro, Vector3d *normal_ray, Vector3d *intersect_strg)
 {
-  Vector3d *sphere_pos = malloc(sizeof(Vector3d)); // initialize a vector for sphere position
-  sphere_pos->x = sphere->pos_x; // save sphere position data in vector
-  sphere_pos->y = sphere->pos_y;
-  sphere_pos->z = sphere->pos_z;
-  double dot_product = 0.0; // initialize variable to hold dot product result
-  // compute dot product between sphere position and Rd
-  dot_product = Vector3d_dot_prod(sphere_pos, normal_ray);
-  free(sphere_pos); // done with sphere position vector
-  if (dot_product <= 0) { // if closest intersection is 0 or negative
-    return INFINITY; // return a miss
-  } // else, a possible hit
-  // create points for sphere center and point of closest intersection
-  Point *sphere_center = malloc(sizeof(Point));
-  Point *closest_intersection = malloc(sizeof(Point));
-  // assign sphere center values
-  sphere_center->x = sphere->pos_x;
-  sphere_center->y = sphere->pos_y;
-  sphere_center->z = sphere->pos_z;
-  // scale each value of the the normal_ray by the dot product to get point of closest intersection
-  closest_intersection->x = (normal_ray->x * dot_product);
-  closest_intersection->y = (normal_ray->y * dot_product);
-  closest_intersection->z = (normal_ray->z * dot_product);
-  // store the closest intersection in intersect_strg
-  intersect_strg->x = closest_intersection->x;
-  intersect_strg->y = closest_intersection->y;
-  intersect_strg->z = closest_intersection->z;
-  // calculate the distance between the sphere center and the closest intersection
-  double distance_from_intersection_to_center = distance_between_points(sphere_center, closest_intersection);
-  // update intersect_strg with point of closest intersection
-  intersect_strg->x = closest_intersection->x;
-  intersect_strg->y = closest_intersection->y;
-  intersect_strg->z = closest_intersection->z;
-  free(sphere_center); // done with intermediate structs
-  free(closest_intersection);
-  // if distance is less than sphere radius, it's a hit
-  if (distance_from_intersection_to_center < sphere->radius)
-  {
-    //printf("HIT! Distance: %lf\n", distance_from_intersection_to_center);
-    return distance_from_intersection_to_center; // return the distance
+  // pull values out of structs for calculations
+  double rd_x, rd_y, rd_z, ro_x, ro_y, ro_z, s_x, s_y, s_z, r_x, r_y, r_z, quad_b, quad_c, sr2, t0, t1, discriminant, tf;
+  rd_x = normal_ray->x;
+  rd_y = normal_ray->y;
+  rd_z = normal_ray->z;
+  ro_x = ro->x;
+  ro_y = ro->y;
+  ro_z = ro->x;
+  s_x = sphere->pos_x;
+  s_y = sphere->pos_y;
+  s_z = sphere->pos_z;
+  // intermediate calculations
+  sr2 = 0; // TODO how do I calculate Sr^2?
+  quad_b = 2 * ((rd_x * (ro_x - s_x)) + (rd_y * (ro_y - s_y)) + (rd_z * (ro_z - s_z)));
+  quad_c = pow((ro_x - s_x), 2) + pow((ro_y - s_y), 2) + pow((ro_z - s_z), 2) - sr2;
+  // calculate the discriminant (note quad_a will always be 1)
+  discriminant = sqrt(pow(quad_b, 2) - 4 * quad_c);
+  if (discriminant < 0) { // no intersection
+    return INFINITY; // miss
   }
-  else // else, it's a miss
-  {
-    //printf("MISS!\n");
+  // intersection is possible, calculate t0 and t1
+  t0 = -1 * quad_b - discriminant;
+  t1 = -1 * quad_b + discriminant;
+  // switch on which t value to use
+  if (t0 >= 0 && t1 >= 0) { // both are positive, use the smaller of the two
+    if (t0 < t1) {
+      tf = t0;
+    }
+    else {
+      tf = t1;
+    }
+  }
+  else if (t0 >= 0) {
+    tf = t0;
+  }
+  else if (t1 >= 0) {
+    tf = t1;
+  }
+  else { // both negative
     return INFINITY;
   }
+  // assign results
+  r_x = ro_x + (rd_x * tf);
+  r_y = ro_y + (rd_y * tf);
+  r_z = ro_z + (rd_z * tf);
+  intersect_strg->x = r_x;
+  intersect_strg->y = r_y;
+  intersect_strg->z = r_z;
+  return tf;
 }
 
-double plane_intersection(Shape *plane, /*Point *origin,*/ Vector3d *normal_ray, Vector3d *intersect_strg)
+double plane_intersection(Shape *plane, Vector3d *ro, Vector3d *normal_ray, Vector3d *intersect_strg)
 {
   Vector3d *plane_norm = malloc(sizeof(Vector3d)); // initialize a vector for plane normal
   plane_norm->x = plane->norm_x;
@@ -135,16 +139,16 @@ double plane_intersection(Shape *plane, /*Point *origin,*/ Vector3d *normal_ray,
 // and passes them to the appropriate intersection test function
 // returns distance to closest intersection if there was a hit,
 // or -INFINITY if it was a miss
-double intersection_test_director(Shape *current_shape, /*Point *origin,*/ Vector3d *normal_ray, Vector3d *intersect_strg)
+double intersection_test_director(Shape *current_shape, Vector3d *ro, Vector3d *normal_ray, Vector3d *intersect_strg)
 {
   double intersection_test_result = INFINITY;
   if (current_shape->type == Sphere) // sphere intersection test
   {
-    intersection_test_result = sphere_intersection(current_shape, /*origin,*/ normal_ray, intersect_strg);
+    intersection_test_result = sphere_intersection(current_shape, ro, normal_ray, intersect_strg);
   }
   else if (current_shape->type == Plane) // plane intersection test
   {
-    intersection_test_result = plane_intersection(current_shape, /*origin,*/ normal_ray, intersect_strg);
+    intersection_test_result = plane_intersection(current_shape, ro, normal_ray, intersect_strg);
   }
   else
   {
@@ -154,6 +158,7 @@ double intersection_test_director(Shape *current_shape, /*Point *origin,*/ Vecto
   return intersection_test_result;
 }
 
+// TODO redo scooch to scooch along the normal of the intersection before recursive raytracing
 void scooch(Vector3d *current_ray, Vector3d *result_strg)
 {
   double scooch_val = 0.00001;
@@ -245,7 +250,7 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
     {
       printf("shape %d ", shape_index);
       // check for intersections with each shape
-      intersect_result = intersection_test_director(&shapes[shape_index], new_normal_ray, intersect_point);
+      intersect_result = intersection_test_director(&shapes[shape_index], new_origin, new_normal_ray, intersect_point);
       if (intersect_result < INFINITY)// if intersect, contribute to 0 to final shade
       {
         intersect_switch = 1; // set intersection switch for shading
