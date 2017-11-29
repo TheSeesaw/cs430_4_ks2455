@@ -123,9 +123,9 @@ double plane_intersection(Shape *plane, Vector3d *ro, Vector3d *normal_ray, Vect
   }
   // calculate intersection point
   double r_x, r_y, r_z;
-  r_x = ro_x + (normal_ray->x * tf);
-  r_y = ro_y + (normal_ray->y * tf);
-  r_z = ro_z + (normal_ray->z * tf);
+  r_x = ro->x + (normal_ray->x * tf);
+  r_y = ro->y + (normal_ray->y * tf);
+  r_z = ro->z + (normal_ray->z * tf);
   intersect_strg->x = r_x;
   intersect_strg->y = r_y;
   intersect_strg->z = r_z;
