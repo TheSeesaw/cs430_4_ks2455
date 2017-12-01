@@ -209,6 +209,61 @@ void construct_rd(Vector3d *origin, double trg_x, double trg_y, double trg_z, Ve
   rd_strg->z = rd_z;
 }
 
+double f_ang(Light *light, Shape *current_shape)
+{
+  // check if spot light
+  if (light->theta != 0)
+  {
+    // check if object in light cone
+    return 0;
+  }
+  else // point light
+  {
+    return 1.0;
+  }
+}
+
+double f_rad(Light *light, Shape *current_shape)
+{
+  // get distance to iso-contour
+  Point *light_pos = malloc(sizeof(Point));
+  Point *shape_pos = malloc(sizeof(Point));
+  light_pos->x = light->pos_x;
+  light_pos->y = light->pos_y;
+  light_pos->z = light->pos_z;
+  shape_pos->x = current_shape->pos_x;
+  shape_pos->y = current_shape->pos_y;
+  shape_pos->z = current_shape->pos_z;
+  double d_l = distance_between_points(light_pos, shape_pos);
+  if (d_l > 1000000) { // effectively 'far away'
+    return 1.0;
+  }
+  else {
+    // attenuation calculation
+    double f_rad_result = 1 / ((light->radial_a2 * pow(d_l, 2)) + (light->radial_a1 * d_l) + light->radial_a0);
+    return f_rad_result;
+  }
+}
+
+double diff_ref(Light *light, Shape *current_shape)
+{
+  return 0.0;
+}
+
+double spec_ref(Light *light, Shape *current_shape)
+{
+  return 0.0;
+}
+
+void shade(Shape *current_shape, Light *light, Pixel *shade_strg)
+{
+  double r_light, g_light, b_light;
+  // angular attenuation
+  // radial attenuation
+  // scale all the color values by the result of the illumination model
+  // saving final shade in shade_strg
+}
+
 int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, int *obj_count_array, Vector3d *intersect_ray, Pixel *shade_strg)
 {
   // declare working variables

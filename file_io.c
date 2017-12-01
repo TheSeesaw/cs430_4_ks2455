@@ -135,6 +135,7 @@ void read_plane_data(FILE* file_to_read, Shape* output_list, int obj_index)
 	free(wastebasket); // free the junk data pointer
 }
 
+// TODO: update to read spot light data
 void read_light_data(FILE* file_to_read, Light* light_list, int light_index)
 {
 	// data should be in the following format
@@ -223,11 +224,6 @@ int read_object_file_director(char *in_file_name, Shape *camera, Shape *output_l
 	obj_count_array[0] = object_index;
 	obj_count_array[1] = light_index;
   return 0;
-}
-
-void shade(double *r_strg, double *g_strg, double *b_strg)
-{
-	return;
 }
 
 // writes pixel data to a P6 .ppm file in binary

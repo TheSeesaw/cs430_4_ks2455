@@ -53,7 +53,4 @@ void read_light_data(FILE* file_to_read, Light* light_list, int light_index);
 
 int read_object_file_director(char *in_file_name, Shape *camera, Shape *output_list, Light *light_list, int *obj_count_array);
 
-// calculates color contribution for a single light
-void shade(double *r_strg, double *g_strg, double *b_strg);
-
 int write_pixels_to_p6(Pixel *buffer, char *out_file_name, int res_width, int res_height);

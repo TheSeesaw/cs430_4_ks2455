@@ -25,6 +25,11 @@ void normalize_ray(Vector3d *origin, Vector3d *target, Vector3d *result);
 
 void construct_rd(Vector3d *origin, double trg_x, double trg_y, double trg_z, Vector3d *rd_strg);
 
+double f_ang(Light *light, Shape *current_shape);
+double f_rad(Light *light, Shape *current_shape);
+double diff_ref(Light *light, Shape *current_shape);
+double spec_ref(Light *light, Shape *current_shape);
+void shade(Shape *current_shape, Light *light, Pixel *shade_strg);
 // Takes in the current shape, shapes, lights, the intersection point with current shape,
 // and a variable to store the final shade
 // returns an int code for error checking
