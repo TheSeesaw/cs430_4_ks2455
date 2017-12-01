@@ -106,6 +106,9 @@ int main(int argc, char *argv[]) {
 																														total_objects,
 																														normalized_ray,
 																														final_color);
+			if (light_intersect_result != 0) {
+				fprintf(stderr, "Error: Problem occurred while calculating light intersection.");
+			}
 			// convert color from decimal scale to 24 bit rgb
 			int pre_r = (int)((shapes_list[closest_intersection_index].d_col_r + final_color->x) * 255);
 			int pre_g = (int)((shapes_list[closest_intersection_index].d_col_g + final_color->y) * 255);

@@ -259,7 +259,7 @@ double spec_ref(Light *light, Shape *current_shape)
 
 void shade(Shape *current_shape, Light *light, Vector3d *shade_strg)
 {
-  double r_light, g_light, b_light, ang_att, rad_att, diffuse, spec, total_ill;
+  double ang_att, rad_att, diffuse, spec, total_ill;
   // angular attenuation
   ang_att = f_ang(light, current_shape);
   // radial attenuation
@@ -286,7 +286,7 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
   int light_index = 0;
   int light_list_length = sizeof(lights) / sizeof(lights[0]);
   int shapes_list_length = sizeof(shapes) / sizeof(shapes[0]);
-  double l_x, l_y, l_z, r_light, g_light, b_light, intersect_result;
+  double l_x, l_y, l_z, intersect_result;
   Vector3d *new_origin = malloc(sizeof(Vector3d));
   Vector3d *new_rd = malloc(sizeof(Vector3d));
   Vector3d *new_normal_ray = malloc(sizeof(Vector3d));
@@ -308,9 +308,6 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
     shape_index = 0;
     intersect_switch = 0; // 0 for false intersection
     intersect_result = INFINITY; // reset intersection result
-    r_light = 0;
-    g_light = 0;
-    b_light = 0;
     for (; shape_index < shapes_list_length; shape_index += 1)
     {
       printf("shape %d ", shape_index);
