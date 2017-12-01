@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
 	the_origin->x = 0;
 	the_origin->y = 0;
 	the_origin->z = 0;
-	Pixel *final_color = malloc(sizeof(Pixel));
+	Vector3d *final_color = malloc(sizeof(Vector3d));
 	// Loop through all the points in the view plane
 	for (int view_plane_index = 0; view_plane_index < view_plane1d_length; view_plane_index++)
 	{
@@ -99,19 +99,31 @@ int main(int argc, char *argv[]) {
 		}
 		else // set the pixel's color to the color of the closest shape
 		{
-			// perform illumination calculations TODO: finish params for following function
-			/*int light_intersect_result = light_intersect_director(&shapes_list[closest_intersection_index],
+			// perform illumination calculations
+			int light_intersect_result = light_intersect_director(&shapes_list[closest_intersection_index],
 				 																										shapes_list,
 																														lights_list,
 																														total_objects,
 																														normalized_ray,
 																														final_color);
-																														*/
 			// convert color from decimal scale to 24 bit rgb
-			// TODO: assign final color to pixel
-			pixel_plane[view_plane_index].r = (int)(shapes_list[closest_intersection_index].d_col_r * 255);
-			pixel_plane[view_plane_index].g = (int)(shapes_list[closest_intersection_index].d_col_g * 255);
-			pixel_plane[view_plane_index].b = (int)(shapes_list[closest_intersection_index].d_col_b * 255);
+			int pre_r = (int)((shapes_list[closest_intersection_index].d_col_r + final_color->x) * 255);
+			int pre_g = (int)((shapes_list[closest_intersection_index].d_col_g + final_color->y) * 255);
+			int pre_b = (int)((shapes_list[closest_intersection_index].d_col_b + final_color->z) * 255);
+			// check that no color value is over 255
+			if (pre_r > 255) {
+				pre_r = 255;
+			}
+			if (pre_g > 255) {
+				pre_g = 255;
+			}
+			if (pre_b > 255) {
+				pre_b = 255;
+			}
+			// assign final color to pixel
+			pixel_plane[view_plane_index].r = pre_r;
+			pixel_plane[view_plane_index].g = pre_g;
+			pixel_plane[view_plane_index].b = pre_b;
 		}
 	}
   // Write results

@@ -235,6 +235,8 @@ double f_rad(Light *light, Shape *current_shape)
   shape_pos->y = current_shape->pos_y;
   shape_pos->z = current_shape->pos_z;
   double d_l = distance_between_points(light_pos, shape_pos);
+  free(light_pos);
+  free(shape_pos);
   if (d_l > 1000000) { // effectively 'far away'
     return 1.0;
   }
@@ -247,24 +249,34 @@ double f_rad(Light *light, Shape *current_shape)
 
 double diff_ref(Light *light, Shape *current_shape)
 {
-  return 0.0;
+  return 0.1;
 }
 
 double spec_ref(Light *light, Shape *current_shape)
 {
-  return 0.0;
+  return 0.1;
 }
 
-void shade(Shape *current_shape, Light *light, Pixel *shade_strg)
+void shade(Shape *current_shape, Light *light, Vector3d *shade_strg)
 {
-  double r_light, g_light, b_light;
+  double r_light, g_light, b_light, ang_att, rad_att, diffuse, spec, total_ill;
   // angular attenuation
+  ang_att = f_ang(light, current_shape);
   // radial attenuation
-  // scale all the color values by the result of the illumination model
-  // saving final shade in shade_strg
+  rad_att = f_rad(light, current_shape);
+  // diffuse reflection
+  diffuse = diff_ref(light, current_shape);
+  // specular reflection
+  spec = spec_ref(light, current_shape);
+  // simple illumination model
+  total_ill = ang_att * rad_att * (diffuse + spec);
+  // scale light colors by total illumination, apply to shade
+  shade_strg->x += light->col_r * total_ill;
+  shade_strg->y += light->col_g * total_ill;
+  shade_strg->z += light->col_b * total_ill;
 }
 
-int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, int *obj_count_array, Vector3d *intersect_ray, Pixel *shade_strg)
+int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, int *obj_count_array, Vector3d *intersect_ray, Vector3d *shade_strg)
 {
   // declare working variables
   printf("objects: %d\n", obj_count_array[0]);
@@ -315,11 +327,8 @@ int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights,
     {
       printf("no instersections, light contributes\n");
       // call shade function for this light
-      // TODO: shade(r_light, g_light, b_light);
+      shade(&shapes[shape_index], &lights[light_index], shade_strg);
     }
-    // else, intersections, no light contribution
-    // add light contribution to final color for pixel
-    // store final color in shade_strg when all light contribution has been calculated
   }
   free(intersect_point);
   free(new_origin);

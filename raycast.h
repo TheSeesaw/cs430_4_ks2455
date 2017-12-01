@@ -29,8 +29,8 @@ double f_ang(Light *light, Shape *current_shape);
 double f_rad(Light *light, Shape *current_shape);
 double diff_ref(Light *light, Shape *current_shape);
 double spec_ref(Light *light, Shape *current_shape);
-void shade(Shape *current_shape, Light *light, Pixel *shade_strg);
+void shade(Shape *current_shape, Light *light, Vector3d *shade_strg);
 // Takes in the current shape, shapes, lights, the intersection point with current shape,
 // and a variable to store the final shade
 // returns an int code for error checking
-int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, int *obj_count_array, Vector3d *intersect_ray, Pixel *shade_strg);
+int light_intersect_director(Shape *current_shape, Shape *shapes, Light *lights, int *obj_count_array, Vector3d *intersect_ray, Vector3d *shade_strg);
